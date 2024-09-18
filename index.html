@@ -41,12 +41,6 @@
     </div>
 
     <script>
-        let previousData = {
-            DO: null,
-            pH: null,
-            Suhu: null
-        };
-
         function fetchData() {
             const url = 'https://dweet.io/get/dweets/for/SAS_1'; // Ganti dengan URL dweet kamu
             
@@ -55,20 +49,10 @@
                 .then(data => {
                     const dweets = data.with[0].content;
 
-                    if (dweets.DO !== previousData.DO) {
-                        document.getElementById('do-value').innerText = dweets.DO || 'Data not available';
-                        previousData.DO = dweets.DO;
-                    }
-
-                    if (dweets.pH !== previousData.pH) {
-                        document.getElementById('ph-value').innerText = dweets.pH || 'Data not available';
-                        previousData.pH = dweets.pH;
-                    }
-
-                    if (dweets.Suhu !== previousData.Suhu) {
-                        document.getElementById('temp-value').innerText = dweets.Suhu || 'Data not available';
-                        previousData.Suhu = dweets.Suhu;
-                    }
+                    // Selalu update tampilan dengan data yang diterima
+                    document.getElementById('do-value').innerText = dweets.DO || 'Data not available';
+                    document.getElementById('ph-value').innerText = dweets.pH || 'Data not available';
+                    document.getElementById('temp-value').innerText = dweets.Suhu || 'Data not available';
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
