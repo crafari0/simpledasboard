@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dweet.io Data with Chart.js</title>
+    <title>Dweet.io Data Visualization</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script> <!-- Tambahkan ini -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const url = 'https://dweet.io/get/latest/dweet/for/SAS_1';
@@ -14,6 +15,7 @@
                 fetch(url)
                     .then(response => response.json())
                     .then(data => {
+                        console.log('Data received:', data); // Debugging line
                         const latestDweet = data.with[0];
                         const content = latestDweet.content;
 
