@@ -9,10 +9,16 @@
             const dweetIo = new EventSource('https://dweet.io/listen/SAS_1');
 
             dweetIo.onmessage = function(event) {
-                const data = JSON.parse(event.data);
-                console.log(data);
-                // Update your HTML with the new data
-                document.getElementById('data-container').innerText = JSON.stringify(data);
+                const response = JSON.parse(event.data);
+                const latestDweet = response.with[0]; // Mengambil item pertama dari array "with"
+                const content = latestDweet.content; // Mengambil konten dweet
+
+                // Menampilkan data
+                document.getElementById('data-container').innerHTML = `
+                    <p>DO: ${content.DO}</p>
+                    <p>pH: ${content.pH}</p>
+                    <p>Suhu: ${content.Suhu}</p>
+                `;
             };
 
             dweetIo.onerror = function(error) {
