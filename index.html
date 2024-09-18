@@ -4,50 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dweet.io Data Visualization</title>
-    <!-- Load Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Load date adapter for Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
-    <!-- Load CORS proxy if needed -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // URL untuk mendapatkan data dari Dweet.io dengan CORS proxy
-            const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+            // URL untuk mendapatkan data dari Dweet.io dengan CORS proxy alternatif
+            const proxyUrl = 'https://corsproxy.io/';
             const targetUrl = 'https://dweet.io/get/latest/dweet/for/SAS_1';
             const url = proxyUrl + targetUrl;
             let chart;
 
-            // Fungsi untuk mengambil data dari URL
             function fetchData() {
                 fetch(url)
-                    .then(response => response.json())
+                    .then(response => response.text()) // Ubah ke text untuk memeriksa respons mentah
+                    .then(text => {
+                        console.log('Raw response:', text); // Log respons mentah
+                        return JSON.parse(text); // Parsing JSON secara manual
+                    })
                     .then(data => {
-                        console.log('Data received:', data); // Debugging line
+                        console.log('Data received:', data);
                         const latestDweet = data.with[0];
                         const content = latestDweet.content;
-
-                        // Memperbarui grafik dengan data terbaru
                         updateChart(content);
                     })
                     .catch(error => console.error('Error:', error));
             }
 
-            // Fungsi untuk memperbarui grafik
             function updateChart(data) {
                 if (chart) {
-                    // Jika grafik sudah ada, tambahkan data baru
-                    chart.data.labels.push(new Date().toLocaleTimeString()); // Tambahkan label waktu
-                    chart.data.datasets[0].data.push(data.DO); // Tambahkan data DO
-                    chart.data.datasets[1].data.push(data.pH); // Tambahkan data pH
-                    chart.data.datasets[2].data.push(data.Suhu); // Tambahkan data Suhu
-                    chart.update(); // Perbarui grafik
+                    chart.data.labels.push(new Date().toLocaleTimeString());
+                    chart.data.datasets[0].data.push(data.DO);
+                    chart.data.datasets[1].data.push(data.pH);
+                    chart.data.datasets[2].data.push(data.Suhu);
+                    chart.update();
                 } else {
-                    // Jika grafik belum ada, buat grafik baru
                     const ctx = document.getElementById('chart').getContext('2d');
                     chart = new Chart(ctx, {
                         type: 'line',
                         data: {
-                            labels: [new Date().toLocaleTimeString()], // Label awal
+                            labels: [new Date().toLocaleTimeString()],
                             datasets: [
                                 {
                                     label: 'DO',
@@ -73,13 +68,13 @@
                             responsive: true,
                             scales: {
                                 x: {
-                                    type: 'time', // Sumbu X dengan tipe waktu
+                                    type: 'time',
                                     time: {
-                                        unit: 'minute' // Interval waktu yang digunakan
+                                        unit: 'minute'
                                     }
                                 },
                                 y: {
-                                    beginAtZero: true // Mulai sumbu Y dari nol
+                                    beginAtZero: true
                                 }
                             }
                         }
@@ -87,17 +82,13 @@
                 }
             }
 
-            // Polling setiap 5 detik untuk mengambil data terbaru
             setInterval(fetchData, 5000);
-
-            // Ambil data awal saat halaman dimuat
             fetchData();
         });
     </script>
 </head>
 <body>
     <h1>Dweet.io Data Visualization</h1>
-    <!-- Elemen canvas untuk menampilkan grafik -->
     <canvas id="chart" width="600" height="400"></canvas>
 </body>
 </html>
