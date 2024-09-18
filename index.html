@@ -23,15 +23,6 @@
         .sensor p {
             margin: 10px 0;
         }
-        .button {
-            padding: 10px 20px;
-            margin: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
@@ -48,9 +39,14 @@
         <h2>Sensor Temperature</h2>
         <p id="temp-value">Loading...</p>
     </div>
-    <button class="button" onclick="fetchData()">Refresh Data</button>
 
     <script>
+        let previousData = {
+            DO: null,
+            pH: null,
+            Suhu: null
+        };
+
         function fetchData() {
             const url = 'https://dweet.io/get/dweets/for/SAS_1'; // Ganti dengan URL dweet kamu
             
@@ -58,9 +54,21 @@
                 .then(response => response.json())
                 .then(data => {
                     const dweets = data.with[0].content;
-                    document.getElementById('do-value').innerText = dweets.DO || 'Data not available';
-                    document.getElementById('ph-value').innerText = dweets.pH || 'Data not available';
-                    document.getElementById('temp-value').innerText = dweets.Suhu || 'Data not available';
+
+                    if (dweets.DO !== previousData.DO) {
+                        document.getElementById('do-value').innerText = dweets.DO || 'Data not available';
+                        previousData.DO = dweets.DO;
+                    }
+
+                    if (dweets.pH !== previousData.pH) {
+                        document.getElementById('ph-value').innerText = dweets.pH || 'Data not available';
+                        previousData.pH = dweets.pH;
+                    }
+
+                    if (dweets.Suhu !== previousData.Suhu) {
+                        document.getElementById('temp-value').innerText = dweets.Suhu || 'Data not available';
+                        previousData.Suhu = dweets.Suhu;
+                    }
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
