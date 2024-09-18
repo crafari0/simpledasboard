@@ -4,38 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ESP32 Dashboard</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
-        }
-        h1 {
-            color: #333;
-        }
-        .sensor {
-            margin: 20px 0;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
-        .sensor p {
-            margin: 10px 0;
-        }
-    </style>
 </head>
 <body>
     <h1>ESP32 Sensor Dashboard</h1>
-    <div class="sensor">
+    <div>
         <h2>Sensor DO</h2>
         <p id="do-value">Loading...</p>
     </div>
-    <div class="sensor">
+    <div>
         <h2>Sensor pH</h2>
         <p id="ph-value">Loading...</p>
     </div>
-    <div class="sensor">
+    <div>
         <h2>Sensor Temperature</h2>
         <p id="temp-value">Loading...</p>
     </div>
@@ -49,6 +29,7 @@
 
         // Menangani event message dari server
         eventSource.onmessage = function(event) {
+            console.log('Data received:', event.data);
             try {
                 const data = JSON.parse(event.data);
                 const dweets = data.with[0].content;
