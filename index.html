@@ -3,27 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dweet.io xample</title>
+    <title>Dweet.io Polling Example</title>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const dweetIo = new EventSource('https://dweet.io/listen/SAS_1');
+            const url = 'https://dweet.io/get/latest/dweet/for/SAS_1';
+            
+            function fetchData() {
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        const latestDweet = data.with[0]; // Mengambil item pertama dari array "with"
+                        const content = latestDweet.content; // Mengambil konten dweet
 
-            dweetIo.onmessage = function(event) {
-                const response = JSON.parse(event.data);
-                const latestDweet = response.with[0]; // Mengambil item pertama dari array "with"
-                const content = latestDweet.content; // Mengambil konten dweet
+                        // Menampilkan data
+                        document.getElementById('data-container').innerHTML = `
+                            <p>DO: ${content.DO}</p>
+                            <p>pH: ${content.pH}</p>
+                            <p>Suhu: ${content.Suhu}</p>
+                        `;
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
 
-                // Menampilkan data
-                document.getElementById('data-container').innerHTML = `
-                    <p>DO: ${content.DO}</p>
-                    <p>pH: ${content.pH}</p>
-                    <p>Suhu: ${content.Suhu}</p>
-                `;
-            };
+            // Polling setiap 5 detik
+            setInterval(fetchData, 5000);
 
-            dweetIo.onerror = function(error) {
-                console.error('Error:', error);
-            };
+            // Ambil data awal saat halaman dimuat
+            fetchData();
         });
     </script>
 </head>
