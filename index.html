@@ -1,58 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ESP32 Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .data-container { margin: 20px; }
+        .data-item { margin-bottom: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/dweet.io/dist/dweet.io.min.js"></script>
 </head>
 <body>
-    <h1>ESP32 Sensor Dashboard</h1>
-    <div>
-        <h2>Sensor DO</h2>
-        <p id="do-value">Loading...</p>
-    </div>
-    <div>
-        <h2>Sensor pH</h2>
-        <p id="ph-value">Loading...</p>
-    </div>
-    <div>
-        <h2>Sensor Temperature</h2>
-        <p id="temp-value">Loading...</p>
+    <div class="data-container">
+        <div class="data-item"><strong>DO:</strong> <span id="do-value">--</span></div>
+        <div class="data-item"><strong>pH:</strong> <span id="ph-value">--</span></div>
+        <div class="data-item"><strong>Suhu:</strong> <span id="suhu-value">--</span></div>
     </div>
 
     <script>
-        // URL listen dari Dweet.io
-        const url = 'https://dweet.io/listen/for/dweets/from/SAS_1'; // Ganti dengan URL listen kamu
+        // Fungsi untuk memperbarui tampilan data
+        function updateDisplay(data) {
+            document.getElementById('do-value').textContent = data.DO || '--';
+            document.getElementById('ph-value').textContent = data.pH || '--';
+            document.getElementById('suhu-value').textContent = data.Suhu || '--';
+        }
 
-        // Membuat instance EventSource untuk mendengarkan data dari Dweet.io
-        const eventSource = new EventSource(url);
+        // Setup listener untuk menerima data dari Dweet.io
+        function setupDweetListener(thing_id) {
+            dweetio.listen_for(thing_id, function (dweet) {
+                var content = dweet.content;
+                console.log("Received dweet:", content); // Log response dari Dweet.io
+                updateDisplay(content);
+            });
+        }
 
-        // Menangani event message dari server
-        eventSource.onmessage = function(event) {
-            console.log('Data received:', event.data);
-            try {
-                const data = JSON.parse(event.data);
-                const dweets = data.with[0].content;
-
-                // Selalu update tampilan dengan data yang diterima
-                document.getElementById('do-value').innerText = dweets.DO || 'Data not available';
-                document.getElementById('ph-value').innerText = dweets.pH || 'Data not available';
-                document.getElementById('temp-value').innerText = dweets.Suhu || 'Data not available';
-            } catch (error) {
-                console.error('Error parsing data:', error);
-                document.getElementById('do-value').innerText = 'Error parsing data';
-                document.getElementById('ph-value').innerText = 'Error parsing data';
-                document.getElementById('temp-value').innerText = 'Error parsing data';
-            }
-        };
-
-        // Menangani event error
-        eventSource.onerror = function(event) {
-            console.error('EventSource failed:', event);
-            document.getElementById('do-value').innerText = 'Error fetching data';
-            document.getElementById('ph-value').innerText = 'Error fetching data';
-            document.getElementById('temp-value').innerText = 'Error fetching data';
-        };
+        // Ganti 'SAS_1' dengan Thing ID kamu
+        setupDweetListener('SAS_1');
     </script>
 </body>
 </html>
